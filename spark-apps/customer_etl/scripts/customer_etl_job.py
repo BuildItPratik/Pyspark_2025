@@ -1,7 +1,7 @@
 from pyspark.sql import SparkSession
 import sys
 
-def main():
+def main(run_date):
 
     spark = SparkSession.builder \
         .appName("CustomerLoyaltyETL") \
@@ -73,15 +73,18 @@ def main():
 
     df_loyalty.show()
 
-    df_loyalty.write.mode("overwrite").option("header", True).csv("hdfs://hdfs-namenode:9000/customer_etl/output/loyalty_snapshot1")
+    df_loyalty.write.mode("overwrite") \
+    .option("header", True) \
+    .csv(f"hdfs://hdfs-namenode:9000/customer_etl/output/loyalty_snapshot_{run_date}")
 
     spark.stop()
 
 
+
 if __name__ == "__main__":
-    # if len(sys.argv) < 2:
-    #     print("Usage: customer_etl_job.py <YYYY-MM-DD>")
-    #     sys.exit(1)
-    main()
+    if len(sys.argv) < 2:
+        print("Usage: customer_etl_job.py <YYYY-MM-DD>")
+        sys.exit(1)
+    main(sys.argv[1])
 
 
